@@ -1,0 +1,82 @@
+#include <Keypad.h> //библиотека за keypad
+
+#include<LiquidCrystal.h> //библиотека за LCD display
+
+LiquidCrystal lcd(12,11,10,9,8,7); // декларираме кои пинове 
+//са за дисплея
+
+const int ROW_NUM = 4; //декларираме колко е дименцията
+//на keypad-a
+const int COLUMN_NUM = 4; //декларираме колко е дименцията
+//на keypad-a
+char keys[ROW_NUM][COLUMN_NUM] ={
+  
+{'1','2','3','A'},
+
+{'4','5','6','B'},
+
+{'7','8','9','C'},
+
+{'*','0','#','D'}
+
+};//декларираме кой бутон къде е
+
+byte pin_rows[ROW_NUM] = {A0,A1,A2,A3}; //декларираме линниите 
+//на кои пинове са
+byte pin_column[COLUMN_NUM] = {A4,A5,2,3}; //декларираме 
+//колоните на кои пинове са
+
+Keypad keypad = Keypad( makeKeymap(keys), pin_rows, pin_column, ROW_NUM, COLUMN_NUM );
+
+const String password = "1234";  //паролата за отваряне
+String input_password;
+
+int DCMotor=13;// правим променлива за DC мотора
+
+void setup()
+{
+  lcd.print("Enter Password");//  изписва да се напише парола
+}
+void loop()
+{
+char key = keypad.getKey();//взима информация за натиснато копче
+
+  if (key)
+  {
+
+    if(key == '*') //ако бъде натиснато"*" се 
+      //изтрива до сега написаното
+    {
+      input_password = ""; 
+    } 
+    else if(key == '#') //проверя дали паролата съвпада при 
+      //натискане на "#"
+    {
+      if(password == input_password) 
+      {
+        lcd.clear(); //изчиства предишно написаното 
+        //нещо на дисплея
+        lcd.print("Initial password");
+        digitalWrite(DCMotor, HIGH); //мотора започва да 
+        //върти за 10 секунди
+        delay(10000);
+        digitalWrite(DCMotor, LOW);
+        
+      } 
+      else
+      {
+        lcd.clear();
+        lcd.print("Wrong password");
+        
+      }
+
+      input_password = ""; //когато се изпълни 
+      //предишния код се изтрива всичко и се чака нова команда
+    } 
+    else 
+    {
+      input_password += key; //добавя символите 
+      //към сегашната парола при натискане
+    }
+  }
+} 
